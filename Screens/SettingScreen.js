@@ -17,6 +17,33 @@ export default class SettingScreen extends React.Component {
             docId: ''
         }
     }
+    getDetails = () => {
+      db.collection("Users").where("email_id","==",this.state.emailId).get()
+      .then((snapshot) => {
+        snapshot.forEach(doc => {
+          var data = doc.data()
+          this.setState({
+            firstName: data.first_name,
+            lastName: data.last_name,
+            address: data.address,
+            contact: data.contact,
+            docId: doc.id
+          })
+        });
+      })
+    }
+    updateDetails = () => {
+      db.collection("Users").doc(this.state.docId).update({
+        first_name: this.state.firstName,
+        last_name: this.state.lastName,
+        address: this.state.address,
+        contact_Info: this.state.contact,
+      })
+      alert("Profile was succesfully updated!")
+    }
+    componentDidMount() {
+      this.getDetails()
+    }
     render() {
         return (
             <View style={styles.container}>
@@ -58,7 +85,9 @@ export default class SettingScreen extends React.Component {
                     contact: text,
                 });}}>
                 </TextInput>
-                <TouchableOpacity style={styles.saveButton}>
+                <TouchableOpacity onPress={() => {
+                  this.updateDetails()
+                }}} style={styles.saveButton}>
                     <Text style={styles.text}>Save</Text>
                 </TouchableOpacity>
                 </View>
